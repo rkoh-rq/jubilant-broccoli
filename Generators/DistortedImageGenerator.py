@@ -2,8 +2,6 @@ import numpy as np
 import cv2
 from torch import from_numpy
 
-
-
 class DistortedImageGenerator:
     def __init__(self, 
                 module_generator, 
@@ -11,7 +9,6 @@ class DistortedImageGenerator:
                 use_pre_generated_maps=False, 
                 num_maps_to_generate=1000,
                 d_K0 = 0.0000003,
-                d_K1 = 0.0000000000001,
                 d_xc = 5,
                 d_yc = 5,
                 d_alpha = 0.001,
@@ -31,14 +28,14 @@ class DistortedImageGenerator:
 
         self.use_pre_generated_maps = use_pre_generated_maps
         self.num_maps_to_generate = num_maps_to_generate
+
         if self.use_pre_generated_maps:
             self.maps_x = []
             self.maps_y = []
             self.params = []
             self.generate_valid_parameters(self.num_maps_to_generate)
-            
+
         self.d_K0 = d_K0
-        self.d_K1 = d_K1
         self.d_xc = d_xc
         self.d_yc = d_yc
         self.d_alpha = d_alpha
@@ -116,7 +113,7 @@ class DistortedImageGenerator:
         # Gonna roll with normal distribution, open to changes
         # Only 8 parameters vary here, cz is always 0 in this experiment, so the labels will only be 8
         K = np.array([np.random.normal(0, self.d_K0),
-                      np.random.normal(0, self.d_K1),
+                      0,
                       0,
                       0], dtype=np.float32)
         xc = np.random.normal(0, self.d_xc)
@@ -131,9 +128,8 @@ class DistortedImageGenerator:
         cz = 0
         return K, xc, yc, alpha, beta, gamma, sx, sy, cx, cy, cz
 
-    def standardize_numpy_parameters(self, K0, K1, xc, yc, alpha, beta, gamma, sx, sy, cx, cy):
+    def standardize_numpy_parameters(self, K0, xc, yc, alpha, beta, gamma, sx, sy, cx, cy):
         return np.array([K0/self.d_K0,
-                         K1/self.d_K1,
                          xc/self.d_xc,
                          yc/self.d_yc,
                          alpha/self.d_alpha,
@@ -165,7 +161,7 @@ class DistortedImageGenerator:
             self.maps_x.append(map_x)
             self.maps_y.append(map_y)
             self.params.append(self.standardize_numpy_parameters(
-                K[0], K[1], xc, yc, alpha, beta, gamma, sx, sy, cx, cy))
+                K[0], xc, yc, alpha, beta, gamma, sx, sy, cx, cy))
 
     # def add_noise_and_rubbish():
     #     # TODO:
@@ -211,4 +207,4 @@ class DistortedImageGenerator:
         sample_module = next(self.module_generator)
         return cv2.remap(sample_module, map_x, map_y, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT),\
             self.standardize_numpy_parameters(
-                K[0], K[1], xc, yc, alpha, beta, gamma, sx, sy, cx, cy)
+                K[0], xc, yc, alpha, beta, gamma, sx, sy, cx, cy)

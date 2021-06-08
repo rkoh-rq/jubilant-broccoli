@@ -1,5 +1,4 @@
 import torch
-from numpy import mod
 from Generators.CellGenerator import Fake_cell_generator
 from Generators.ModuleGenerator import Module_generator
 from Generators.DistortedImageGenerator import DistortedImageGenerator
@@ -20,7 +19,7 @@ if __name__ == "__main__":
             torch.nn.LeakyReLU(),
             torch.nn.Linear(128, 32),
             torch.nn.LeakyReLU(),
-            torch.nn.Linear(32, 11),
+            torch.nn.Linear(32, 10),
         )
 
     model.fc = net
