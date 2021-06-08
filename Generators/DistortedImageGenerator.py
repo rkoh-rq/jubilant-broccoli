@@ -111,7 +111,7 @@ class DistortedImageGenerator:
 
     def generate_random_parameters(self):
         # Gonna roll with normal distribution, open to changes
-        # Only 8 parameters vary here, cz is always 0 in this experiment, so the labels will only be 8
+        # Only 10 parameters vary here, cz is always 0 in this experiment, so the labels will only be 8
         K = np.array([np.random.normal(0, self.d_K0),
                       0,
                       0,
