@@ -48,6 +48,6 @@ if __name__ == "__main__":
             running_loss += loss.item()
         print('[%d] loss: %.3f' %(epoch + 1, running_loss))
         if epoch % 10 == 9:
-            torch.save(model.state_dict(), 'c')
+            torch.save(model.state_dict(), 'checkpoint_{}.pth'.format(epoch))
 
     print('Finished Training')
